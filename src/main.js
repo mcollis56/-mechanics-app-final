@@ -4,7 +4,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import { supabase } from './newSupabaseClient.js'; // Using our clean client
+import { supabase } from './supabaseClient.js'; // Using our clean client
 
 // Import Tailwind CSS - This is critical for styling
 import './assets/main.css'; 

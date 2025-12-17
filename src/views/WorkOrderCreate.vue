@@ -29,7 +29,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '@/newSupabaseClient.js'
+import { supabase } from '@/supabaseClient.js'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()

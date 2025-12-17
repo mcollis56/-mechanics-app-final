@@ -1,8 +1,20 @@
 <template>
   <div class="work-order-list">
     <h1>Work Orders</h1>
+    
     <!-- Loading state -->
-    <div v-if="loading">Loading…</div>
+    <div v-if="loading" class="status-message">Loading work orders…</div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="error-message">
+      <p>❌ Error: {{ error }}</p>
+      <button @click="fetchWorkOrders">Retry</button>
+    </div>
+
+    <!-- Empty state -->
+    <div v-else-if="workOrders.length === 0" class="empty-message">
+      <p>No work orders found. Create your first work order!</p>
+    </div>
 
     <!-- Table of work orders -->
     <div v-else>
@@ -38,25 +50,33 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '@/newSupabaseClient' // adjust this path if your Supabase client lives elsewhere
+import { supabase } from '@/supabaseClient' // adjust this path if your Supabase client lives elsewhere
 
 // reactive state
 const workOrders = ref([])
 const loading = ref(true)
+const error = ref(null)
 
 // fetch data from Supabase
 const fetchWorkOrders = async () => {
-  const { data, error } = await supabase
-    .from('work_orders')
-    .select('*')
-    .order('created_at', { ascending: false })
+  try {
+    const { data, error: fetchError } = await supabase
+      .from('work_orders')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching work orders:', error)
-  } else {
-    workOrders.value = data
+    if (fetchError) {
+      console.error('Error fetching work orders:', fetchError)
+      error.value = fetchError.message
+    } else {
+      workOrders.value = data || []
+    }
+  } catch (err) {
+    console.error('Unexpected error:', err)
+    error.value = 'An unexpected error occurred while loading work orders'
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
 // run on component mount
@@ -66,6 +86,48 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.work-order-list {
+  padding: 20px;
+}
+
+.status-message,
+.error-message,
+.empty-message {
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.status-message {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.error-message button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #c62828;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-message button:hover {
+  background-color: #b71c1c;
+}
+
+.empty-message {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

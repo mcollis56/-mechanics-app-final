@@ -64,6 +64,19 @@ onMounted(fetchCurrentUser);
         </RouterLink>
 
         <RouterLink
+          to="/work-orders"
+          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"
+          :class="route.path.startsWith('/work-orders')
+            ? 'bg-purple-50 text-purple-700'
+            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'"
+        >
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-5 8l2 2 4-4" />
+          </svg>
+          Work Orders
+        </RouterLink>
+
+        <RouterLink
           to="/calendar"
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"
           :class="route.path === '/calendar'

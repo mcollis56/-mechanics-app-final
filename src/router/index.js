@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { supabase } from '@/newSupabaseClient' // adjust path if needed
+import { supabase } from '@/supabaseClient' // adjust path if needed
 
 import MainLayout from '@/layouts/MainLayout.vue'
 import JobsView from '@/views/JobsView.vue'
