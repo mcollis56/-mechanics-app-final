@@ -8,6 +8,7 @@ const AdminView = () => import('@/views/AdminView.vue')
 const AdminSettingsView = () => import('@/views/AdminSettingsView.vue')
 const InvoiceEditorView = () => import('@/views/InvoiceEditorView.vue')
 const CustomersView = () => import('@/views/CustomersView.vue')
+const VehiclesView = () => import('@/views/VehiclesView.vue')
 const SuppliersView = () => import('@/views/SuppliersView.vue')
 const ReportsView = () => import('@/views/ReportsView.vue')
 const InvoicesListView = () => import('@/views/InvoicesListView.vue')
@@ -29,6 +30,7 @@ const routes = [
       { path: '', name: 'jobs', component: JobsView },
       { path: 'calendar', name: 'calendar', component: CalendarView },
       { path: 'customers', name: 'customers', component: CustomersView },
+      { path: 'vehicles', name: 'vehicles', component: VehiclesView },
       { path: 'suppliers', name: 'suppliers', component: SuppliersView },
       { path: 'reports', name: 'reports', component: ReportsView },
       { path: 'invoices', name: 'invoices', component: InvoicesListView },

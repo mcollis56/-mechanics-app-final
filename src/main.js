@@ -1,7 +1,19 @@
-import './assets/main.css'
+// main.js - FINAL VERSION (21-Oct)
+// This file is the entry point for the entire application.
 
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import { supabase } from './newSupabaseClient.js'; // Using our clean client
 
-createApp(App).use(router).mount('#app')
+// Import Tailwind CSS - This is critical for styling
+import './assets/main.css'; 
+
+const app = createApp(App);
+
+app.use(router);
+
+// Make supabase available globally if needed, though direct import is better
+app.config.globalProperties.$supabase = supabase;
+
+app.mount('#app');

@@ -2,8 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { supabase } from '../supabaseClient.js';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+
 
 const route = useRoute();
 const router = useRouter();
@@ -209,7 +208,7 @@ const updateStatus = async (newStatus) => {
 
 // Export to PDF
 const exportToPDF = () => {
-  const doc = new jsPDF();
+  const doc = new window.jspdf.jsPDF();
 
   // Set up colors
   const primaryColor = [124, 58, 237]; // Purple
@@ -222,9 +221,9 @@ const exportToPDF = () => {
 
   doc.setFontSize(10);
   doc.setTextColor(...textColor);
-  doc.text('123 Workshop St', 20, 32);
-  doc.text('Northern Beaches, NSW 2099', 20, 37);
-  doc.text('Phone: (02) 9999 9999', 20, 42);
+  doc.text('3/3 Taronga Pl,', 20, 32);
+  doc.text('Mona Vale NSW 2103', 20, 37);
+  doc.text('Phone: (02) 9999 2771', 20, 42);
 
   // Invoice Number and Date
   doc.setFontSize(16);
@@ -364,9 +363,9 @@ onMounted(fetchInvoice);
         <div>
           <h3 class="font-semibold text-gray-900 mb-2">From:</h3>
           <p class="text-gray-700 font-medium">Euro Motor Works</p>
-          <p class="text-gray-600 text-sm">123 Workshop St</p>
-          <p class="text-gray-600 text-sm">Northern Beaches, NSW 2099</p>
-          <p class="text-gray-600 text-sm">Phone: (02) 9999 9999</p>
+          <p class="text-gray-600 text-sm">3/3 Taronga Pl</p>
+          <p class="text-gray-600 text-sm">Mona Vale, NSW 2103</p>
+          <p class="text-gray-600 text-sm">Phone: (02) 9999 2771</p>
         </div>
 
         <div>
