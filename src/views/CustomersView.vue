@@ -126,7 +126,12 @@ onMounted(fetchCustomers);
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="customer in customers" :key="customer.id" class="hover:bg-gray-50 transition-colors">
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-medium text-gray-900">{{ customer.name }}</div>
+              <router-link
+                :to="`/customers/${customer.id}`"
+                class="text-sm font-medium text-purple-600 hover:text-purple-900 transition-colors"
+              >
+                {{ customer.name }}
+              </router-link>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-600">{{ customer.email }}</div>

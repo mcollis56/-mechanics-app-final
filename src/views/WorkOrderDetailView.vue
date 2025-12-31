@@ -31,7 +31,7 @@
       <!-- Parts Section -->
       <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Parts</h2>
-        
+
         <!-- Existing Parts List -->
         <div v-if="items.length > 0" class="mb-6">
           <div class="overflow-x-auto">
@@ -55,7 +55,7 @@
               <tfoot class="bg-gray-50">
                 <tr>
                   <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-gray-700">Total Parts Cost:</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${{ totalPartsСost.toFixed(2) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${{ totalPartsCost.toFixed(2) }}</td>
                 </tr>
               </tfoot>
             </table>
@@ -69,26 +69,82 @@
         <div class="bg-blue-50 rounded-lg p-6">
           <h3 class="text-xl font-semibold text-gray-800 mb-4">Add New Part</h3>
           <form @submit.prevent="addPart" class="space-y-4">
-            <div>
-              <label for="partName" class="block text-sm font-medium text-gray-700 mb-1">
+            <!-- Searchable Part Dropdown -->
+            <div class="relative">
+              <label for="partSearch" class="block text-sm font-medium text-gray-700 mb-1">
                 Part Name <span class="text-red-500">*</span>
               </label>
-              <input 
-                type="text" 
-                id="partName"
-                v-model="newPart.name"
+              <input
+                type="text"
+                id="partSearch"
+                v-model="partSearchQuery"
+                @input="searchInventory"
+                @focus="showDropdown = true"
+                @blur="handleBlur"
+                autocomplete="off"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter part name"
+                placeholder="Search for a part..."
               />
+
+              <!-- Loading indicator -->
+              <div v-if="isSearching" class="absolute right-3 top-9">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+              </div>
+
+              <!-- Dropdown Results -->
+              <div
+                v-if="showDropdown && (inventoryResults.length > 0 || partSearchQuery.length >= 2)"
+                class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+              >
+                <div v-if="inventoryResults.length === 0 && partSearchQuery.length >= 2 && !isSearching" class="px-4 py-3 text-sm text-gray-500">
+                  No parts found matching "{{ partSearchQuery }}"
+                </div>
+                <div
+                  v-for="invItem in inventoryResults"
+                  :key="invItem.id"
+                  @mousedown.prevent="selectPart(invItem)"
+                  class="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">{{ invItem.description }}</p>
+                      <p v-if="invItem.part_number" class="text-xs text-gray-500">Part #: {{ invItem.part_number }}</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-sm font-semibold text-green-600">${{ formatPrice(invItem.unit_price) }}</p>
+                      <p class="text-xs text-gray-500">Qty: {{ invItem.quantity ?? 0 }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
+
+            <!-- Selected Part Info -->
+            <div v-if="selectedInventoryItem" class="bg-green-50 border border-green-200 rounded-md p-3">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-sm font-medium text-green-800">Selected: {{ selectedInventoryItem.description }}</p>
+                  <p v-if="selectedInventoryItem.part_number" class="text-xs text-green-600">Part #: {{ selectedInventoryItem.part_number }}</p>
+                </div>
+                <button
+                  type="button"
+                  @click="clearSelectedPart"
+                  class="text-green-600 hover:text-green-800"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label for="unitCost" class="block text-sm font-medium text-gray-700 mb-1">
                   Unit Cost <span class="text-red-500">*</span>
                 </label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   id="unitCost"
                   v-model.number="newPart.unit_cost"
                   step="0.01"
@@ -97,13 +153,13 @@
                   placeholder="0.00"
                 />
               </div>
-              
+
               <div>
                 <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">
                   Quantity <span class="text-red-500">*</span>
                 </label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   id="quantity"
                   v-model.number="newPart.quantity"
                   min="1"
@@ -112,9 +168,9 @@
                 />
               </div>
             </div>
-            
+
             <div class="flex justify-end">
-              <button 
+              <button
                 type="submit"
                 :disabled="isSubmitting"
                 class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
@@ -144,15 +200,15 @@
 
       <!-- Action Buttons -->
       <div class="flex justify-end space-x-4">
-        <button 
-          v-if="workOrder.status === 'draft'" 
+        <button
+          v-if="workOrder.status === 'draft'"
           @click="startJob"
           class="px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
         >
           Start Job
         </button>
-        <button 
-          v-else-if="workOrder.status === 'in_progress'" 
+        <button
+          v-else-if="workOrder.status === 'in_progress'"
           @click="completeJob"
           class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
         >
@@ -181,6 +237,14 @@ const items = ref([])
 const notes = ref([])
 const isSubmitting = ref(false)
 
+// Inventory search state
+const partSearchQuery = ref('')
+const inventoryResults = ref([])
+const isSearching = ref(false)
+const showDropdown = ref(false)
+const selectedInventoryItem = ref(null)
+let searchTimeout = null
+
 // Form data for new part
 const newPart = ref({
   name: '',
@@ -189,11 +253,79 @@ const newPart = ref({
 })
 
 // Computed property for total parts cost
-const totalPartsСost = computed(() => {
+const totalPartsCost = computed(() => {
   return items.value.reduce((total, item) => {
     return total + (parseFloat(item.unit_cost) * item.quantity)
   }, 0)
 })
+
+const formatPrice = (price) => {
+  if (price == null) return '0.00'
+  return parseFloat(price).toFixed(2)
+}
+
+const searchInventory = () => {
+  // Clear previous timeout
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+
+  // Don't search if query is too short
+  if (partSearchQuery.value.length < 2) {
+    inventoryResults.value = []
+    return
+  }
+
+  // Debounce the search
+  searchTimeout = setTimeout(async () => {
+    isSearching.value = true
+    try {
+      const query = partSearchQuery.value.toLowerCase()
+
+      const { data, error } = await supabase
+        .from('inventory')
+        .select('*')
+        .or(`description.ilike.%${query}%,part_number.ilike.%${query}%`)
+        .order('description', { ascending: true })
+        .limit(10)
+
+      if (error) {
+        console.error('Error searching inventory:', error)
+        inventoryResults.value = []
+      } else {
+        inventoryResults.value = data || []
+      }
+    } catch (err) {
+      console.error('Search error:', err)
+      inventoryResults.value = []
+    } finally {
+      isSearching.value = false
+    }
+  }, 300)
+}
+
+const selectPart = (invItem) => {
+  selectedInventoryItem.value = invItem
+  partSearchQuery.value = invItem.description
+  newPart.value.name = invItem.description
+  newPart.value.unit_cost = invItem.unit_price || 0
+  showDropdown.value = false
+  inventoryResults.value = []
+}
+
+const clearSelectedPart = () => {
+  selectedInventoryItem.value = null
+  partSearchQuery.value = ''
+  newPart.value.name = ''
+  newPart.value.unit_cost = null
+}
+
+const handleBlur = () => {
+  // Delay hiding dropdown to allow click events on dropdown items
+  setTimeout(() => {
+    showDropdown.value = false
+  }, 200)
+}
 
 const fetchData = async () => {
   const id = route.params.id
@@ -259,6 +391,9 @@ const addPart = async () => {
       unit_cost: null,
       quantity: null
     }
+    partSearchQuery.value = ''
+    selectedInventoryItem.value = null
+    inventoryResults.value = []
 
     // Refresh the parts list
     await fetchData()

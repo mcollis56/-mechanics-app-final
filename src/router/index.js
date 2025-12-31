@@ -17,6 +17,8 @@ const ReportsView = () => import('@/views/ReportsView.vue')
 const InvoicesListView = () => import('@/views/InvoicesListView.vue')
 const JobArchiveView = () => import('@/views/JobArchiveView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
+const InventoryView = () => import('@/views/InventoryView.vue')
+const CustomerDetailView = () => import('@/views/CustomerDetailView.vue')
 
 const routes = [
   {
@@ -35,8 +37,10 @@ const routes = [
       { path: 'work-orders/:id', name: 'work-order-detail', component: WorkOrderDetailView, props: true }, // NEW route
       { path: 'calendar', name: 'calendar', component: CalendarView },
       { path: 'customers', name: 'customers', component: CustomersView },
+      { path: 'customers/:id', name: 'customer-detail', component: CustomerDetailView, props: true },
       { path: 'vehicles', name: 'vehicles', component: VehiclesView },
       { path: 'suppliers', name: 'suppliers', component: SuppliersView },
+      { path: 'inventory', name: 'inventory', component: InventoryView },
       { path: 'reports', name: 'reports', component: ReportsView },
       { path: 'invoices', name: 'invoices', component: InvoicesListView },
       { path: 'invoice/:id', name: 'invoice', component: InvoiceEditorView, props: true },
