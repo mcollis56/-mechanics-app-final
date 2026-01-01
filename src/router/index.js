@@ -19,6 +19,7 @@ const JobArchiveView = () => import('@/views/JobArchiveView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
 const InventoryView = () => import('@/views/InventoryView.vue')
 const CustomerDetailView = () => import('@/views/CustomerDetailView.vue')
+const WorkOrderCreateView = () => import('@/views/WorkOrderCreate.vue')
 
 const routes = [
   {
@@ -34,7 +35,8 @@ const routes = [
     children: [
       { path: '', name: 'jobs', component: JobsView },
       { path: 'work-orders', name: 'work-orders', component: WorkOrdersView },
-      { path: 'work-orders/:id', name: 'work-order-detail', component: WorkOrderDetailView, props: true }, // NEW route
+      { path: 'work-orders/create', name: 'work-order-create', component: WorkOrderCreateView },
+      { path: 'work-orders/:id', name: 'work-order-detail', component: WorkOrderDetailView, props: true },
       { path: 'calendar', name: 'calendar', component: CalendarView },
       { path: 'customers', name: 'customers', component: CustomersView },
       { path: 'customers/:id', name: 'customer-detail', component: CustomerDetailView, props: true },
