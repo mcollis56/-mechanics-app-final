@@ -103,19 +103,6 @@ onMounted(fetchCurrentUser);
         </RouterLink>
 
         <RouterLink
-          to="/vehicles"
-          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"
-          :class="route.path === '/vehicles'
-            ? 'bg-purple-50 text-purple-700'
-            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'"
-        >
-          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-          </svg>
-          Vehicles
-        </RouterLink>
-
-        <RouterLink
           to="/suppliers"
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"
           :class="route.path === '/suppliers'
